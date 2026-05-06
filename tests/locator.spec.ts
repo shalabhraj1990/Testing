@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-test.describe.only("Locator", () => {
+test.describe("Locator", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("http://localhost:4200/");
     await page.getByText("Forms").click();
@@ -27,4 +27,31 @@ test.describe.only("Locator", () => {
     //by exact text match
     page.locator(':text-is("Using the Grid")');
   });
+
+  test("User Facing Locators", async ({ page }) => {
+    //getByRole
+    await page.getByRole("textbox", { name: "Email" }).first().click();
+    //getByLabel
+    await page.getByLabel("Email").first().click();
+    //getByLabel
+    await page.getByPlaceholder("Jane Doe").first().click();
+    //getByTitle
+    await page.getByTitle("IoT Dashboard").first().click();
+    //getByTestId
+    //await page.getByTestId("signin").first().click();
+  });
+
+  test.only("Locating Child Elements", async ({ page }) => {
+    //await page.locator('nb-card nb-radio :test-is("Option 1")').click();
+    await page
+      .locator("nb-card")
+      .nth(1)
+      .locator("nb-radio")
+      .locator(':test-is("Option 1")')
+      .click();
+
+      await page.locator('nb-card nb-radio :test-is("Option 1")').click();
+  });
+
+  
 });
