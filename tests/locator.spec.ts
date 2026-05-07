@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("Locator", () => {
   test.beforeEach(async ({ page }) => {
@@ -41,7 +41,7 @@ test.describe("Locator", () => {
     //await page.getByTestId("signin").first().click();
   });
 
-  test.only("Locating Child Elements", async ({ page }) => {
+  test("Locating Child Elements", async ({ page }) => {
     //await page.locator('nb-card nb-radio :test-is("Option 1")').click();
     await page
       .locator("nb-card")
@@ -50,8 +50,78 @@ test.describe("Locator", () => {
       .locator(':test-is("Option 1")')
       .click();
 
-      await page.locator('nb-card nb-radio :test-is("Option 1")').click();
+    await page.locator('nb-card nb-radio :test-is("Option 1")').click();
   });
 
-  
+  test("Locating Parent Elements", async ({ page }) => {
+    //await page.locator('nb-card nb-radio :test-is("Option 1")').click();
+    await page
+      .locator("nb-card", { hasText: "Using the Grid" })
+      .getByRole("textbox", { name: "email" })
+      .click();
+
+    await page
+      .locator("nb-card", { has: page.locator("#inputEmail1") })
+      .getByRole("textbox", { name: "email" })
+      .click();
+
+    await page
+      .locator("nb-card")
+      .filter({ hasText: "Basic form" })
+      .getByRole("textbox", { name: "email" })
+      .click();
+
+    await page
+      .locator(':text-is("Using the Grid")')
+      .locator("..")
+      .getByRole("textbox", { name: "email" })
+      .click();
+  });
+
+  test("resusing the locators", async ({ page }) => {
+    const basicform = page.locator("nb-card").filter({ hasText: "Basic form" });
+    const emailField = basicform.getByRole("textbox", { name: "email" });
+
+    await emailField.fill("test@test.com");
+    await basicform
+      .getByRole("textbox", { name: "Password" })
+      .fill("test@test");
+    await basicform.locator("nb-checkbox").click();
+    await basicform.getByRole("button").click();
+
+    await expect(emailField).toHaveValue("test@test.com");
+  });
+
+  test("Extracting Values", async ({ page }) => {
+    const basicform = page.locator("nb-card").filter({ hasText: "Basic form" });
+    const emailField = basicform.getByRole("textbox", { name: "email" });
+    // single value test
+
+    const buttonText = await basicform.locator("button").textContent();
+    expect(buttonText).toEqual("Submit");
+    //multi value test
+    const allRadioButtonLabels = await page
+      .locator("nb-radio")
+      .allTextContents();
+    expect(allRadioButtonLabels).toContain("Option 1");
+    //get the attribute value
+    const placeholder = await emailField.getAttribute("placeholder");
+    expect(placeholder).toEqual("Email");
+  });
+
+  test.only("Assertions", async ({ page }) => {
+    const basicformButton = page
+      .locator("nb-card")
+      .filter({ hasText: "Basic form" })
+      .locator("button");
+
+    const text = await basicformButton.textContent();
+    //Genreal Assertion
+    expect(text).toEqual("Submit");
+    //Locator Assertion
+    await expect(basicformButton).toHaveText("Submit");
+    //Soft assetions
+    await expect.soft(basicformButton).toHaveText('Sumit1');
+    await basicformButton.click()
+  });
 });
