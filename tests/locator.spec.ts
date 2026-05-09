@@ -109,7 +109,7 @@ test.describe("Locator", () => {
     expect(placeholder).toEqual("Email");
   });
 
-  test.only("Assertions", async ({ page }) => {
+  test("Assertions", async ({ page }) => {
     const basicformButton = page
       .locator("nb-card")
       .filter({ hasText: "Basic form" })
@@ -121,7 +121,7 @@ test.describe("Locator", () => {
     //Locator Assertion
     await expect(basicformButton).toHaveText("Submit");
     //Soft assetions
-    await expect.soft(basicformButton).toHaveText('Sumit1');
-    await basicformButton.click()
+    await expect.soft(basicformButton).toHaveText("Sumit1");
+    await basicformButton.click();
   });
 });
