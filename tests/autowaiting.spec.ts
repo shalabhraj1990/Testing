@@ -13,4 +13,6 @@ test("auto await", async ({ page }) => {
   await expect(successButton).toHaveText("Data loaded with AJAX get request.", {
     timeout: 20000,
   });
+
+
 });
